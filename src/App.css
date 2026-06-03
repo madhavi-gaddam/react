@@ -455,11 +455,16 @@ tbody tr.selected-row {
   text-align: center;
 }
 
+.select-heading input,
 .select-cell input {
   width: 18px;
   height: 18px;
   accent-color: #2563eb;
   cursor: pointer;
+}
+
+.select-heading input:disabled {
+  cursor: not-allowed;
 }
 
 .key-cell {

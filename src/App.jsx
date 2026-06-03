@@ -12,11 +12,12 @@ function App() {
   const [tasks, setTasks] = React.useState([]);
   const [searchText, setSearchText] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("all");
-  const [selectedTaskId, setSelectedTaskId] = React.useState(null);
+  const [selectedTaskIds, setSelectedTaskIds] = React.useState([]);
   const [editingTaskId, setEditingTaskId] = React.useState(null);
   const [formMessage, setFormMessage] = React.useState("");
   const [zoom, setZoom] = React.useState(100);
 
+  const selectedTaskId = selectedTaskIds.length === 1 ? selectedTaskIds[0] : null;
   const selectedTask = tasks.find((task) => task.id === selectedTaskId);
   const editingTask = tasks.find((task) => task.id === editingTaskId);
 
@@ -70,21 +71,46 @@ function App() {
 
     setTasks(tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
     setEditingTaskId(null);
-    setSelectedTaskId(updatedTask.id);
+    setSelectedTaskIds([updatedTask.id]);
     setFormMessage("");
     return true;
   }
 
   function selectTask(taskId) {
-    // One selected task is enough for edit/delete, so selecting another row replaces the old one.
-    setSelectedTaskId((currentTaskId) => (currentTaskId === taskId ? null : taskId));
+    setSelectedTaskIds((currentTaskIds) =>
+      currentTaskIds.includes(taskId)
+        ? currentTaskIds.filter((currentTaskId) => currentTaskId !== taskId)
+        : [...currentTaskIds, taskId],
+    );
+    setEditingTaskId(null);
+    clearFormMessage();
+  }
+
+  function selectAllVisibleTasks() {
+    const visibleTaskIds = filteredTasks.map((task) => task.id);
+    const areAllVisibleTasksSelected =
+      visibleTaskIds.length > 0 && visibleTaskIds.every((taskId) => selectedTaskIds.includes(taskId));
+
+    setSelectedTaskIds((currentTaskIds) => {
+      if (areAllVisibleTasksSelected) {
+        return currentTaskIds.filter((taskId) => !visibleTaskIds.includes(taskId));
+      }
+
+      return [...new Set([...currentTaskIds, ...visibleTaskIds])];
+    });
+    setEditingTaskId(null);
+    clearFormMessage();
+  }
+
+  function clearSelectedTasks() {
+    setSelectedTaskIds([]);
     setEditingTaskId(null);
     clearFormMessage();
   }
 
   function requestEdit(taskId) {
-    if (selectedTaskId !== taskId) {
-      setFormMessage("Select a task first, then choose Edit.");
+    if (selectedTaskIds.length !== 1 || selectedTaskId !== taskId) {
+      setFormMessage("Select one task first, then choose Edit.");
       return;
     }
 
@@ -93,13 +119,13 @@ function App() {
   }
 
   function requestDelete(taskId) {
-    if (selectedTaskId !== taskId) {
+    if (!selectedTaskIds.includes(taskId)) {
       setFormMessage("Select a task first, then choose Delete.");
       return;
     }
 
-    setTasks(tasks.filter((task) => task.id !== taskId));
-    setSelectedTaskId(null);
+    setTasks(tasks.filter((task) => !selectedTaskIds.includes(task.id)));
+    setSelectedTaskIds([]);
     setEditingTaskId(null);
     clearFormMessage();
   }
@@ -172,8 +198,10 @@ function App() {
             <TaskTable
               onDeleteTask={requestDelete}
               onEditTask={requestEdit}
+              onClearSelection={clearSelectedTasks}
               onSelectTask={selectTask}
-              selectedTaskId={selectedTaskId}
+              onSelectAllTasks={selectAllVisibleTasks}
+              selectedTaskIds={selectedTaskIds}
               tasks={filteredTasks}
             />
           </section>

@@ -1,8 +1,19 @@
 import { TaskRow } from "./TaskRow.jsx";
 import { Edit3, Trash2, X } from "lucide-react";
 
-export function TaskTable({ onDeleteTask, onEditTask, onSelectTask, selectedTaskId, tasks }) {
-  const selectedTask = tasks.find((task) => task.id === selectedTaskId);
+export function TaskTable({
+  onClearSelection,
+  onDeleteTask,
+  onEditTask,
+  onSelectAllTasks,
+  onSelectTask,
+  selectedTaskIds,
+  tasks,
+}) {
+  const selectedTasks = tasks.filter((task) => selectedTaskIds.includes(task.id));
+  const selectedTask = selectedTasks.length === 1 ? selectedTasks[0] : null;
+  const areAllTasksSelected =
+    tasks.length > 0 && tasks.every((task) => selectedTaskIds.includes(task.id));
 
   return (
     <div className="table-card">
@@ -10,7 +21,15 @@ export function TaskTable({ onDeleteTask, onEditTask, onSelectTask, selectedTask
         <table>
           <thead>
             <tr>
-              <th className="select-heading">Checkbox</th>
+              <th className="select-heading">
+                <input
+                  aria-label="Select all tasks"
+                  checked={areAllTasksSelected}
+                  disabled={tasks.length === 0}
+                  onChange={onSelectAllTasks}
+                  type="checkbox"
+                />
+              </th>
               <th>Serial No</th>
               <th>Task Name</th>
               <th>Status</th>
@@ -21,7 +40,7 @@ export function TaskTable({ onDeleteTask, onEditTask, onSelectTask, selectedTask
             {tasks.length > 0 ? (
               tasks.map((task) => (
                 <TaskRow
-                  isSelected={selectedTaskId === task.id}
+                  isSelected={selectedTaskIds.includes(task.id)}
                   key={task.id}
                   onSelectTask={onSelectTask}
                   task={task}
@@ -38,39 +57,45 @@ export function TaskTable({ onDeleteTask, onEditTask, onSelectTask, selectedTask
         </table>
       </div>
 
-      {selectedTask ? (
+      {selectedTasks.length > 0 ? (
         <div className="selection-bar" role="toolbar" aria-label="Selected task actions">
           <button
             className="selection-clear"
-            onClick={() => onSelectTask(selectedTask.id)}
+            onClick={onClearSelection}
             title="Clear selection"
             type="button"
           >
             <X size={20} />
           </button>
 
-          <span className="selection-count">1 task selected</span>
+          <span className="selection-count">
+            {selectedTasks.length} {selectedTasks.length === 1 ? "task" : "tasks"} selected
+          </span>
 
-          <span className="selection-divider" />
+          {selectedTask ? (
+            <>
+              <span className="selection-divider" />
 
-          <button
-            className="selection-action edit-action"
-            onClick={() => onEditTask(selectedTask.id)}
-            type="button"
-          >
-            <Edit3 size={20} />
-            Edit
-          </button>
+              <button
+                className="selection-action edit-action"
+                onClick={() => onEditTask(selectedTask.id)}
+                type="button"
+              >
+                <Edit3 size={20} />
+                Edit
+              </button>
+            </>
+          ) : null}
 
           <span className="selection-divider" />
 
           <button
             className="selection-action delete-action"
-            onClick={() => onDeleteTask(selectedTask.id)}
+            onClick={() => onDeleteTask(selectedTasks[0].id)}
             type="button"
           >
             <Trash2 size={20} />
-            Delete
+            {selectedTasks.length === 1 ? "Delete" : "Delete All"}
           </button>
         </div>
       ) : null}
