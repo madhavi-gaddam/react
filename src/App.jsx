@@ -73,6 +73,8 @@ function App() {
     };
 
     setTasks([...tasks, nextTask]);
+    setActiveTab("all");
+    setSearchText("");
     setFormMessage("");
     return true;
   }
