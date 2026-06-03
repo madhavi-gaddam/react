@@ -7,10 +7,10 @@ const navItems = [
 
 export function Sidebar({ activePage, onPageChange }) {
   return (
-    <aside className="sidebar" aria-label="Primary navigation">
-      <div className="sidebar-title">Task Board</div>
+    <nav className="navbar" aria-label="Primary navigation">
+      <div className="navbar-title">Task Board</div>
 
-      <nav className="sidebar-nav">
+      <div className="navbar-links">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activePage === item.id;
@@ -18,7 +18,7 @@ export function Sidebar({ activePage, onPageChange }) {
           return (
             <button
               aria-current={isActive ? "page" : undefined}
-              className={`sidebar-link${isActive ? " active" : ""}`}
+              className={`navbar-link${isActive ? " active" : ""}`}
               key={item.id}
               onClick={() => onPageChange(item.id)}
               type="button"
@@ -28,7 +28,7 @@ export function Sidebar({ activePage, onPageChange }) {
             </button>
           );
         })}
-      </nav>
-    </aside>
+      </div>
+    </nav>
   );
 }

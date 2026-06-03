@@ -4,11 +4,21 @@ import { SearchBar } from "./components/SearchBar.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { TaskForm } from "./components/TaskForm.jsx";
 import { TaskTable } from "./components/TaskTable.jsx";
+import { ThemeToggle } from "./components/ThemeToggle.jsx";
 import { ZoomControls } from "./components/ZoomControls.jsx";
 import { makeInitialTasks, statusOptions } from "./data/tasks.js";
 
 function App() {
-  const [activePage, setActivePage] = React.useState("tasks");
+  const [activePage, setActivePage] = React.useState("home");
+  const [isDarkTheme, setIsDarkTheme] = React.useState(() => {
+    const savedTheme = window.localStorage.getItem("task-board-theme");
+
+    if (savedTheme) {
+      return savedTheme === "dark";
+    }
+
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
   const [tasks, setTasks] = React.useState(makeInitialTasks);
   const [searchText, setSearchText] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("all");
@@ -20,6 +30,10 @@ function App() {
   const selectedTaskId = selectedTaskIds.length === 1 ? selectedTaskIds[0] : null;
   const selectedTask = tasks.find((task) => task.id === selectedTaskId);
   const editingTask = tasks.find((task) => task.id === editingTaskId);
+
+  React.useEffect(() => {
+    window.localStorage.setItem("task-board-theme", isDarkTheme ? "dark" : "light");
+  }, [isDarkTheme]);
 
   const filteredTasks = tasks.filter((task) => {
     const search = searchText.trim().toLowerCase();
@@ -139,73 +153,85 @@ function App() {
   }
 
   return (
-    <main className="page">
-      <Sidebar activePage={activePage} onPageChange={setActivePage} />
-
+    <main className={`page${isDarkTheme ? " theme-dark" : ""}`}>
       <div
-        className="dashboard-scale"
+        className="app-scale"
         style={{
           transform: `scale(${zoom / 100})`,
           width: `${10000 / zoom}%`,
+          height: `${10000 / zoom}%`,
         }}
       >
-        {activePage === "home" ? (
-          <section className="dashboard home-page">
-            <header className="dashboard-header">
-              <h1>Home Page</h1>
-            </header>
+        <Sidebar activePage={activePage} onPageChange={setActivePage} />
 
-            <div className="home-overview">
-              <p className="home-kicker">Home Page</p>
-              <h2>Task Board</h2>
-              <div className="home-stats" aria-label="Task summary">
-                <div>
-                  <span>{tasks.length}</span>
-                  <p>Total Tasks</p>
-                </div>
-                <div>
-                  <span>{tasks.filter((task) => task.status === "todo").length}</span>
-                  <p>Todo</p>
-                </div>
-                <div>
-                  <span>{tasks.filter((task) => task.status === "in progress").length}</span>
-                  <p>In Progress</p>
-                </div>
-                <div>
-                  <span>{tasks.filter((task) => task.status === "done").length}</span>
-                  <p>Done</p>
+        <div className="dashboard-scale">
+          {activePage === "home" ? (
+            <section className="dashboard home-page">
+              <header className="dashboard-header">
+                <h1>Home Page</h1>
+                <ThemeToggle
+                  isDarkTheme={isDarkTheme}
+                  onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
+                />
+              </header>
+
+              <div className="home-overview">
+                <p className="home-kicker">Home Page</p>
+                <h2>Task Board</h2>
+                <div className="home-stats" aria-label="Task summary">
+                  <div>
+                    <span>{tasks.length}</span>
+                    <p>Total Tasks</p>
+                  </div>
+                  <div>
+                    <span>{tasks.filter((task) => task.status === "todo").length}</span>
+                    <p>Todo</p>
+                  </div>
+                  <div>
+                    <span>{tasks.filter((task) => task.status === "in progress").length}</span>
+                    <p>In Progress</p>
+                  </div>
+                  <div>
+                    <span>{tasks.filter((task) => task.status === "done").length}</span>
+                    <p>Done</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-        ) : (
-          <section className="dashboard">
-            <Header activeTab={activeTab} onTabChange={setActiveTab} />
+            </section>
+          ) : (
+            <section className="dashboard">
+              <Header
+                activeTab={activeTab}
+                isDarkTheme={isDarkTheme}
+                onTabChange={setActiveTab}
+                onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
+              />
 
-            <div className="search-section">
-              <SearchBar searchText={searchText} onSearchChange={setSearchText} />
-            </div>
+              <div className="search-section">
+                <SearchBar searchText={searchText} onSearchChange={setSearchText} />
+              </div>
 
-            <TaskForm
-              editingTask={editingTask}
-              onAddTask={addTask}
-              onSaveTask={saveTask}
-              selectedTask={selectedTask}
-              statusOptions={statusOptions}
-              validationMessage={formMessage}
-            />
+              <TaskForm
+                editingTask={editingTask}
+                onAddTask={addTask}
+                onSaveTask={saveTask}
+                selectedTask={selectedTask}
+                statusOptions={statusOptions}
+                validationMessage={formMessage}
+              />
 
-            <TaskTable
-              onDeleteTask={requestDelete}
-              onEditTask={requestEdit}
-              onClearSelection={clearSelectedTasks}
-              onSelectTask={selectTask}
-              onSelectAllTasks={selectAllVisibleTasks}
-              selectedTaskIds={selectedTaskIds}
-              tasks={filteredTasks}
-            />
-          </section>
-        )}
+              <TaskTable
+                onDeleteTask={requestDelete}
+                onEditTask={requestEdit}
+                onClearSelection={clearSelectedTasks}
+                onSelectTask={selectTask}
+                onSelectAllTasks={selectAllVisibleTasks}
+                selectedTaskIds={selectedTaskIds}
+                tasks={filteredTasks}
+              />
+            </section>
+          )}
+        </div>
       </div>
 
       <ZoomControls zoom={zoom} onZoomIn={zoomIn} onZoomOut={zoomOut} />
