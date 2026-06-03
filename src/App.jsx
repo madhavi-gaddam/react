@@ -5,11 +5,11 @@ import { Sidebar } from "./components/Sidebar.jsx";
 import { TaskForm } from "./components/TaskForm.jsx";
 import { TaskTable } from "./components/TaskTable.jsx";
 import { ZoomControls } from "./components/ZoomControls.jsx";
-import { statusOptions } from "./data/tasks.js";
+import { makeInitialTasks, statusOptions } from "./data/tasks.js";
 
 function App() {
   const [activePage, setActivePage] = React.useState("tasks");
-  const [tasks, setTasks] = React.useState([]);
+  const [tasks, setTasks] = React.useState(makeInitialTasks);
   const [searchText, setSearchText] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("all");
   const [selectedTaskIds, setSelectedTaskIds] = React.useState([]);
