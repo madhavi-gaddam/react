@@ -1,13 +1,11 @@
 import { TaskTabs } from "./TaskTabs.jsx";
-import { ThemeToggle } from "./ThemeToggle.jsx";
 
-export function Header({ activeTab, isDarkTheme, onTabChange, onToggleTheme }) {
+export function Header({ activeTab, onTabChange, taskCounts }) {
   return (
     <header className="dashboard-header">
       <h1>Tasks</h1>
       <div className="header-actions">
-        <TaskTabs activeTab={activeTab} onTabChange={onTabChange} />
-        <ThemeToggle isDarkTheme={isDarkTheme} onToggleTheme={onToggleTheme} />
+        <TaskTabs activeTab={activeTab} onTabChange={onTabChange} taskCounts={taskCounts} />
       </div>
     </header>
   );

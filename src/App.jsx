@@ -4,12 +4,9 @@ import { SearchBar } from "./components/SearchBar.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { TaskForm } from "./components/TaskForm.jsx";
 import { TaskTable } from "./components/TaskTable.jsx";
-import { ThemeToggle } from "./components/ThemeToggle.jsx";
-import { ZoomControls } from "./components/ZoomControls.jsx";
 import { makeInitialTasks, statusOptions } from "./data/tasks.js";
 
 function App() {
-  const [activePage, setActivePage] = React.useState("home");
   const [isDarkTheme, setIsDarkTheme] = React.useState(() => {
     const savedTheme = window.localStorage.getItem("task-board-theme");
 
@@ -25,11 +22,19 @@ function App() {
   const [selectedTaskIds, setSelectedTaskIds] = React.useState([]);
   const [editingTaskId, setEditingTaskId] = React.useState(null);
   const [formMessage, setFormMessage] = React.useState("");
-  const [zoom, setZoom] = React.useState(100);
 
   const selectedTaskId = selectedTaskIds.length === 1 ? selectedTaskIds[0] : null;
   const selectedTask = tasks.find((task) => task.id === selectedTaskId);
   const editingTask = tasks.find((task) => task.id === editingTaskId);
+  const taskCounts = React.useMemo(
+    () => ({
+      all: tasks.length,
+      todo: tasks.filter((task) => task.status === "todo").length,
+      "in progress": tasks.filter((task) => task.status === "in progress").length,
+      done: tasks.filter((task) => task.status === "done").length,
+    }),
+    [tasks],
+  );
 
   React.useEffect(() => {
     window.localStorage.setItem("task-board-theme", isDarkTheme ? "dark" : "light");
@@ -146,97 +151,48 @@ function App() {
     clearFormMessage();
   }
 
-  function zoomIn() {
-    setZoom((currentZoom) => Math.min(currentZoom + 10, 150));
-  }
-
-  function zoomOut() {
-    setZoom((currentZoom) => Math.max(currentZoom - 10, 80));
-  }
-
   return (
     <main className={`page${isDarkTheme ? " theme-dark" : ""}`}>
-      <div
-        className="app-scale"
-        style={{
-          transform: `scale(${zoom / 100})`,
-          width: `${10000 / zoom}%`,
-          height: `${10000 / zoom}%`,
-        }}
-      >
-        <Sidebar activePage={activePage} onPageChange={setActivePage} />
+      <div className="app-scale">
+        <Sidebar
+          isDarkTheme={isDarkTheme}
+          onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
+        />
 
         <div className="dashboard-scale">
-          {activePage === "home" ? (
-            <section className="dashboard home-page">
-              <header className="dashboard-header">
-                <h1>Home Page</h1>
-                <ThemeToggle
-                  isDarkTheme={isDarkTheme}
-                  onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
-                />
-              </header>
+          <section className="dashboard">
+            <Header
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              taskCounts={taskCounts}
+            />
 
-              <div className="home-overview">
-                <p className="home-kicker">Home Page</p>
-                <h2>Task Board</h2>
-                <div className="home-stats" aria-label="Task summary">
-                  <div>
-                    <span>{tasks.length}</span>
-                    <p>Total Tasks</p>
-                  </div>
-                  <div>
-                    <span>{tasks.filter((task) => task.status === "todo").length}</span>
-                    <p>Todo</p>
-                  </div>
-                  <div>
-                    <span>{tasks.filter((task) => task.status === "in progress").length}</span>
-                    <p>In Progress</p>
-                  </div>
-                  <div>
-                    <span>{tasks.filter((task) => task.status === "done").length}</span>
-                    <p>Done</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-          ) : (
-            <section className="dashboard">
-              <Header
-                activeTab={activeTab}
-                isDarkTheme={isDarkTheme}
-                onTabChange={setActiveTab}
-                onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
-              />
+            <div className="search-section">
+              <SearchBar searchText={searchText} onSearchChange={setSearchText} />
+            </div>
 
-              <div className="search-section">
-                <SearchBar searchText={searchText} onSearchChange={setSearchText} />
-              </div>
+            <TaskForm
+              editingTask={editingTask}
+              onAddTask={addTask}
+              onSaveTask={saveTask}
+              selectedTask={selectedTask}
+              statusOptions={statusOptions}
+              validationMessage={formMessage}
+            />
 
-              <TaskForm
-                editingTask={editingTask}
-                onAddTask={addTask}
-                onSaveTask={saveTask}
-                selectedTask={selectedTask}
-                statusOptions={statusOptions}
-                validationMessage={formMessage}
-              />
-
-              <TaskTable
-                onDeleteTask={requestDelete}
-                onEditTask={requestEdit}
-                onClearSelection={clearSelectedTasks}
-                onSelectTask={selectTask}
-                onSelectAllTasks={selectAllVisibleTasks}
-                selectedTaskIds={selectedTaskIds}
-                tasks={filteredTasks}
-              />
-            </section>
-          )}
+            <TaskTable
+              onDeleteTask={requestDelete}
+              onEditTask={requestEdit}
+              onClearSelection={clearSelectedTasks}
+              onSelectTask={selectTask}
+              onSelectAllTasks={selectAllVisibleTasks}
+              selectedTaskIds={selectedTaskIds}
+              tasks={filteredTasks}
+            />
+          </section>
         </div>
       </div>
 
-      <ZoomControls zoom={zoom} onZoomIn={zoomIn} onZoomOut={zoomOut} />
     </main>
   );
 }

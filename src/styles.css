@@ -36,8 +36,6 @@ button:disabled {
 
 .app-scale {
   margin: 0 auto;
-  transform-origin: top center;
-  transition: transform 180ms ease;
 }
 
 .task-panel {
@@ -72,38 +70,6 @@ h1 {
   font-size: 34px;
   font-weight: 700;
   letter-spacing: 0;
-}
-
-.zoom-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px;
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-}
-
-.zoom-controls button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #111827;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
-
-.zoom-controls span {
-  min-width: 48px;
-  color: #374151;
-  font-size: 14px;
-  font-weight: 700;
-  text-align: center;
 }
 
 .tabs {
@@ -403,10 +369,6 @@ tbody tr.selected-row {
 
   h1 {
     font-size: 32px;
-  }
-
-  .zoom-controls {
-    align-self: flex-end;
   }
 
   .tab {

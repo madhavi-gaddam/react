@@ -1,33 +1,19 @@
-import { Home, ListTodo } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle.jsx";
 
-const navItems = [
-  { id: "home", label: "Home Page", icon: Home },
-  { id: "tasks", label: "Tasks", icon: ListTodo },
-];
-
-export function Sidebar({ activePage, onPageChange }) {
+export function Sidebar({ isDarkTheme, onToggleTheme }) {
   return (
     <nav className="navbar" aria-label="Primary navigation">
       <div className="navbar-title">Task Board</div>
 
-      <div className="navbar-links">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activePage === item.id;
+      <div className="navbar-content">
+        <div className="navbar-actions">
+          <ThemeToggle isDarkTheme={isDarkTheme} onToggleTheme={onToggleTheme} />
 
-          return (
-            <button
-              aria-current={isActive ? "page" : undefined}
-              className={`navbar-link${isActive ? " active" : ""}`}
-              key={item.id}
-              onClick={() => onPageChange(item.id)}
-              type="button"
-            >
-              <Icon size={20} />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
+          <div className="profile-badge" aria-label="Madhavi Gaddam profile">
+            <span className="profile-logo">MG</span>
+            <span className="profile-name">Madhavi Gaddam</span>
+          </div>
+        </div>
       </div>
     </nav>
   );
