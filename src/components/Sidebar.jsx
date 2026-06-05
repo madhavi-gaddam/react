@@ -1,12 +1,6 @@
 import { ThemeToggle } from "./ThemeToggle.jsx";
 
-export function Sidebar({
-  isDarkTheme,
-  onToggleTheme,
-  profileDisplayName,
-  profileInitials,
-  onProfileClick,
-}) {
+export function Sidebar({ isDarkTheme, onToggleTheme }) {
   return (
     <nav className="navbar" aria-label="Primary navigation">
       <div className="navbar-title">Task Board</div>
@@ -15,15 +9,10 @@ export function Sidebar({
         <div className="navbar-actions">
           <ThemeToggle isDarkTheme={isDarkTheme} onToggleTheme={onToggleTheme} />
 
-          <button
-            type="button"
-            className="profile-badge"
-            aria-label={`Open profile form for ${profileDisplayName}`}
-            onClick={onProfileClick}
-          >
-            <span className="profile-logo">{profileInitials}</span>
-            <span className="profile-name">{profileDisplayName}</span>
-          </button>
+          <div className="profile-badge" aria-label="Madhavi Gaddam profile">
+            <span className="profile-logo">MG</span>
+            <span className="profile-name">Madhavi Gaddam</span>
+          </div>
         </div>
       </div>
     </nav>
