@@ -4,6 +4,7 @@ import { SearchBar } from "./components/SearchBar.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { TaskForm } from "./components/TaskForm.jsx";
 import { TaskTable } from "./components/TaskTable.jsx";
+import { ProfileForm } from "./components/ProfileForm.jsx";
 import { makeInitialTasks, statusOptions } from "./data/tasks.js";
 
 function App() {
@@ -22,6 +23,13 @@ function App() {
   const [selectedTaskIds, setSelectedTaskIds] = React.useState([]);
   const [editingTaskId, setEditingTaskId] = React.useState(null);
   const [formMessage, setFormMessage] = React.useState("");
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const [profile, setProfile] = React.useState(() => {
+    const savedProfile = window.localStorage.getItem("task-board-profile");
+    return savedProfile
+      ? JSON.parse(savedProfile)
+      : { firstName: "", lastName: "", email: "" };
+  });
 
   const selectedTaskId = selectedTaskIds.length === 1 ? selectedTaskIds[0] : null;
   const selectedTask = tasks.find((task) => task.id === selectedTaskId);
@@ -39,6 +47,28 @@ function App() {
   React.useEffect(() => {
     window.localStorage.setItem("task-board-theme", isDarkTheme ? "dark" : "light");
   }, [isDarkTheme]);
+
+  const profileDisplayName = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || "Madhavi Gaddam";
+  const profileInitials = profileDisplayName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("") || "MG";
+
+  function openProfileForm() {
+    setProfileOpen(true);
+  }
+
+  function closeProfileForm() {
+    setProfileOpen(false);
+  }
+
+  function saveProfile(profileData) {
+    setProfile(profileData);
+    window.localStorage.setItem("task-board-profile", JSON.stringify(profileData));
+    setProfileOpen(false);
+  }
 
   const filteredTasks = tasks.filter((task) => {
     const search = searchText.trim().toLowerCase();
@@ -157,9 +187,13 @@ function App() {
         <Sidebar
           isDarkTheme={isDarkTheme}
           onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
+          profileDisplayName={profileDisplayName}
+          profileInitials={profileInitials}
+          onProfileClick={openProfileForm}
         />
 
-        <div className="dashboard-scale">
+        <div className={`workspace${profileOpen ? " profile-open" : ""}`}>
+          <div className="dashboard-scale">
           <section className="dashboard">
             <Header
               activeTab={activeTab}
@@ -190,6 +224,15 @@ function App() {
               tasks={filteredTasks}
             />
           </section>
+          </div>
+
+          {profileOpen ? (
+            <ProfileForm
+              profile={profile}
+              onSave={saveProfile}
+              onClose={closeProfileForm}
+            />
+          ) : null}
         </div>
       </div>
 
