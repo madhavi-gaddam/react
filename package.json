@@ -1,15 +1,18 @@
 {
+  "name": "react-projects",
+  "private": true,
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
-  },
-  "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "lucide-react": "latest"
-  },
-  "devDependencies": {}
+    "dev": "npm run dev:task-board-5",
+    "build": "npm run build:event-manager && npm run build:task-board-4 && npm run build:task-board-5",
+    "preview": "npm run preview:task-board-5",
+    "build:event-manager": "npm --prefix event_manager_react run build",
+    "build:task-board-4": "npm --prefix taak_board_4 run build",
+    "build:task-board-5": "npm --prefix task_board_5 run build",
+    "dev:event-manager": "npm --prefix event_manager_react run dev",
+    "dev:task-board-4": "npm --prefix taak_board_4 run dev",
+    "dev:task-board-5": "npm --prefix task_board_5 run dev",
+    "preview:event-manager": "npm --prefix event_manager_react run preview",
+    "preview:task-board-4": "npm --prefix taak_board_4 run preview",
+    "preview:task-board-5": "npm --prefix task_board_5 run preview"
+  }
 }
