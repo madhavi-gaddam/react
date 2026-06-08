@@ -23,9 +23,14 @@ function App() {
   const [editingTaskId, setEditingTaskId] = React.useState(null);
   const [formMessage, setFormMessage] = React.useState("");
   const [isRegistrationOpen, setIsRegistrationOpen] = React.useState(false);
+  const [profile, setProfile] = React.useState({
+    firstName: "Madhavi",
+    lastName: "Gaddam",
+    gmail: "",
+  });
   const [registration, setRegistration] = React.useState({
-    firstName: "",
-    lastName: "",
+    firstName: "Madhavi",
+    lastName: "Gaddam",
     gmail: "",
   });
   const [registrationMessage, setRegistrationMessage] = React.useState("");
@@ -171,11 +176,19 @@ function App() {
   function saveRegistration(event) {
     event.preventDefault();
 
-    if (!registration.firstName.trim() || !registration.lastName.trim()) {
+    const nextProfile = {
+      firstName: registration.firstName.trim(),
+      lastName: registration.lastName.trim(),
+      gmail: registration.gmail.trim(),
+    };
+
+    if (!nextProfile.firstName || !nextProfile.lastName) {
       setRegistrationMessage("First name and last name are required.");
       return;
     }
 
+    setProfile(nextProfile);
+    setRegistration(nextProfile);
     setRegistrationMessage("Profile saved.");
     setIsRegistrationOpen(false);
   }
@@ -187,6 +200,7 @@ function App() {
           isDarkTheme={isDarkTheme}
           onProfileClick={() => setIsRegistrationOpen(true)}
           onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
+          profile={profile}
         />
 
         <div className={`workspace${isRegistrationOpen ? " registration-open" : ""}`}>
