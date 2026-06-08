@@ -1,0 +1,224 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #eef2f7;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  overflow: hidden;
+  color: #172033;
+}
+
+/* Main app stays inside the screen while the event list scrolls. */
+.app {
+  max-width: 760px;
+  height: calc(100vh - 60px);
+  box-sizing: border-box;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(23, 32, 51, 0.12);
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  text-align: center;
+  margin: 0 0 22px;
+  color: #111827;
+}
+
+.input-section {
+  margin-bottom: 18px;
+}
+
+.input-row {
+  display: flex;
+  gap: 12px;
+}
+
+input {
+  flex: 1;
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+}
+
+button {
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s;
+}
+
+button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+#message {
+  min-height: 20px;
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#message.error {
+  color: #dc2626;
+}
+
+#message.success {
+  color: #16a34a;
+}
+
+/* Event list has its own background, fixed height, and vertical scroll. */
+.events-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  height: 360px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.events-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+#eventCounter {
+  color: #475569;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+#emptyState {
+  text-align: center;
+  color: #64748b;
+  margin: 110px 0 0;
+  font-weight: 600;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+/* Each event is a flexible card with fixed action buttons on the right. */
+li {
+  list-style: none;
+  background: white;
+  margin-bottom: 12px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+li:hover {
+  border-color: #bfdbfe;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.event-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+input.event-text {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.event-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.edit-btn {
+  background: #0891b2;
+}
+
+.edit-btn:hover {
+  background: #0e7490;
+}
+
+.save-btn {
+  background: #16a34a;
+}
+
+.save-btn:hover {
+  background: #15803d;
+}
+
+.delete-btn {
+  background: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+
+  .app {
+    height: calc(100vh - 24px);
+    margin: 10px auto;
+    padding: 16px;
+  }
+
+  .input-row,
+  li {
+    flex-direction: column;
+  }
+
+  .add-btn,
+  .event-actions,
+  .event-actions button {
+    width: 100%;
+  }
+
+  .events-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .events-section {
+    height: 340px;
+  }
+}
