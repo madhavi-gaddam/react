@@ -22,6 +22,13 @@ function App() {
   const [selectedTaskIds, setSelectedTaskIds] = React.useState([]);
   const [editingTaskId, setEditingTaskId] = React.useState(null);
   const [formMessage, setFormMessage] = React.useState("");
+  const [isRegistrationOpen, setIsRegistrationOpen] = React.useState(false);
+  const [registration, setRegistration] = React.useState({
+    firstName: "",
+    lastName: "",
+    gmail: "",
+  });
+  const [registrationMessage, setRegistrationMessage] = React.useState("");
 
   const selectedTaskId = selectedTaskIds.length === 1 ? selectedTaskIds[0] : null;
   const selectedTask = tasks.find((task) => task.id === selectedTaskId);
@@ -151,15 +158,39 @@ function App() {
     clearFormMessage();
   }
 
+  function updateRegistrationField(event) {
+    const { name, value } = event.target;
+
+    setRegistration((currentRegistration) => ({
+      ...currentRegistration,
+      [name]: value,
+    }));
+    setRegistrationMessage("");
+  }
+
+  function saveRegistration(event) {
+    event.preventDefault();
+
+    if (!registration.firstName.trim() || !registration.lastName.trim()) {
+      setRegistrationMessage("First name and last name are required.");
+      return;
+    }
+
+    setRegistrationMessage("Profile saved.");
+    setIsRegistrationOpen(false);
+  }
+
   return (
     <main className={`page${isDarkTheme ? " theme-dark" : ""}`}>
       <div className="app-scale">
         <Sidebar
           isDarkTheme={isDarkTheme}
+          onProfileClick={() => setIsRegistrationOpen(true)}
           onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
         />
 
-        <div className="dashboard-scale">
+        <div className={`workspace${isRegistrationOpen ? " registration-open" : ""}`}>
+          <div className="dashboard-scale">
           <section className="dashboard">
             <Header
               activeTab={activeTab}
@@ -190,6 +221,54 @@ function App() {
               tasks={filteredTasks}
             />
           </section>
+          </div>
+
+          {isRegistrationOpen && (
+            <aside className="registration-panel" aria-label="Profile registration form">
+              <div className="registration-header">
+                <h2>Registration</h2>
+              </div>
+
+              <form className="registration-form" onSubmit={saveRegistration}>
+                <label>
+                  <span>First name</span>
+                  <input
+                    name="firstName"
+                    onChange={updateRegistrationField}
+                    required
+                    type="text"
+                    value={registration.firstName}
+                  />
+                </label>
+
+                <label>
+                  <span>Last name</span>
+                  <input
+                    name="lastName"
+                    onChange={updateRegistrationField}
+                    required
+                    type="text"
+                    value={registration.lastName}
+                  />
+                </label>
+
+                <label>
+                  <span>Gmail</span>
+                  <input
+                    name="gmail"
+                    onChange={updateRegistrationField}
+                    placeholder="Optional"
+                    type="email"
+                    value={registration.gmail}
+                  />
+                </label>
+
+                <button type="submit">Save</button>
+
+                {registrationMessage && <p className="registration-message">{registrationMessage}</p>}
+              </form>
+            </aside>
+          )}
         </div>
       </div>
 
