@@ -4,6 +4,7 @@ import { SearchBar } from "./components/SearchBar.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { TaskForm } from "./components/TaskForm.jsx";
 import { TaskTable } from "./components/TaskTable.jsx";
+import { ProfileModal } from "./components/ProfileModal.jsx";
 import { makeInitialTasks, statusOptions } from "./data/tasks.js";
 
 function App() {
@@ -16,6 +17,11 @@ function App() {
 
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+  const [profile, setProfile] = React.useState(() => {
+    const savedProfile = window.localStorage.getItem("task-board-profile");
+    return savedProfile ? JSON.parse(savedProfile) : {};
+  });
+  const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false);
   const [tasks, setTasks] = React.useState(makeInitialTasks);
   const [searchText, setSearchText] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("all");
@@ -151,48 +157,59 @@ function App() {
     clearFormMessage();
   }
 
+  function saveProfile(profileData) {
+    setProfile(profileData);
+    window.localStorage.setItem("task-board-profile", JSON.stringify(profileData));
+  }
+
   return (
     <main className={`page${isDarkTheme ? " theme-dark" : ""}`}>
       <div className="app-scale">
         <Sidebar
           isDarkTheme={isDarkTheme}
           onToggleTheme={() => setIsDarkTheme((currentTheme) => !currentTheme)}
+          profile={profile}
+          onProfileClick={() => setIsProfileModalOpen(true)}
         />
 
-        <div className="dashboard-scale">
-          <section className="dashboard">
-            <Header
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              taskCounts={taskCounts}
-            />
+        <div className={`workspace${isProfileModalOpen ? " profile-open" : ""}`}>
+          <div className="dashboard-scale">
+            <section className="dashboard">
+              <Header activeTab={activeTab} onTabChange={setActiveTab} taskCounts={taskCounts} />
 
-            <div className="search-section">
-              <SearchBar searchText={searchText} onSearchChange={setSearchText} />
-            </div>
+              <div className="search-section">
+                <SearchBar searchText={searchText} onSearchChange={setSearchText} />
+              </div>
 
-            <TaskForm
-              editingTask={editingTask}
-              onAddTask={addTask}
-              onSaveTask={saveTask}
-              selectedTask={selectedTask}
-              statusOptions={statusOptions}
-              validationMessage={formMessage}
-            />
+              <TaskForm
+                editingTask={editingTask}
+                onAddTask={addTask}
+                onSaveTask={saveTask}
+                selectedTask={selectedTask}
+                statusOptions={statusOptions}
+                validationMessage={formMessage}
+              />
 
-            <TaskTable
-              onDeleteTask={requestDelete}
-              onEditTask={requestEdit}
-              onClearSelection={clearSelectedTasks}
-              onSelectTask={selectTask}
-              onSelectAllTasks={selectAllVisibleTasks}
-              selectedTaskIds={selectedTaskIds}
-              tasks={filteredTasks}
-            />
-          </section>
+              <TaskTable
+                onDeleteTask={requestDelete}
+                onEditTask={requestEdit}
+                onClearSelection={clearSelectedTasks}
+                onSelectTask={selectTask}
+                onSelectAllTasks={selectAllVisibleTasks}
+                selectedTaskIds={selectedTaskIds}
+                tasks={filteredTasks}
+              />
+            </section>
+          </div>
+
+          <ProfileModal
+            isOpen={isProfileModalOpen}
+            onClose={() => setIsProfileModalOpen(false)}
+            onSave={saveProfile}
+            profile={profile}
+          />
         </div>
       </div>
-
     </main>
   );
 }
