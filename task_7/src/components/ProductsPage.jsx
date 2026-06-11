@@ -1,4 +1,5 @@
 import React from "react";
+import { fallbackProducts } from "../data/catalog.js";
 
 export function ProductsPage() {
   const [products, setProducts] = React.useState([]);
@@ -15,7 +16,8 @@ export function ProductsPage() {
         setIsLoading(false);
       })
       .catch(() => {
-        setErrorMessage("Products could not be loaded.");
+        setProducts(fallbackProducts);
+        setErrorMessage("");
         setIsLoading(false);
       });
   }, []);

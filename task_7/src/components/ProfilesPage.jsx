@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { fallbackProfiles } from "../data/catalog.js";
 
 export function ProfilesPage() {
   const [profiles, setProfiles] = React.useState([]);
@@ -15,7 +16,8 @@ export function ProfilesPage() {
         setIsLoading(false);
       })
       .catch(() => {
-        setErrorMessage("Profiles could not be loaded.");
+        setProfiles(fallbackProfiles);
+        setErrorMessage("");
         setIsLoading(false);
       });
   }, []);
